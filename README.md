@@ -11,9 +11,9 @@ Note: This package is created on the backbone of [Material Tag Editor](https://g
 Fetch and search async data directly from server or from static data. Use it for multiselect and single, and use it somehow naturally.
 
 <p float="left">
-  <img src="./metadata/staticasync.gif" width="250" />
-  <img src="./metadata/staticmulti.gif" width="250" />
-  <img src="./metadata/single.gif" width="250" />
+  <img src="https://user-images.githubusercontent.com/30495155/212550777-b2b995da-6543-4f17-8acd-ec6506c0bfed.gif" width="250" />
+  <img src="https://user-images.githubusercontent.com/30495155/212550796-708cf939-557e-458c-8f76-23ff9f0d44f2.gif" width="250" />
+  <img src="https://user-images.githubusercontent.com/30495155/212550751-6d4f6944-dc8b-4980-aa5e-b3a674f5168d.gif" width="250" />
 </p>
 
 ## Usage

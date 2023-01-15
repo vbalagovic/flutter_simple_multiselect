@@ -1,6 +1,6 @@
 name: flutter_simple_multiselect
-description: A new Flutter package project.
-version: 0.0.1
+description: Flutter simple multiselect project.
+version: 0.0.2
 homepage: https://github.com/vbalagovic/flutter_simple_multiselect.git
 
 environment:
