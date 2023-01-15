@@ -1,5 +1,7 @@
 # Flutter Simple Multiselect
 
+`v1.0.0`
+
 There are a few multiselect packages for flutter but somehow somehow i haven't found one that is simple like this. It's inspired by the vue multiselect. You can use static or async (server) data and use it as searchable single or multiselect.
 
 Note: This package is created on the backbone of [Material Tag Editor](https://github.com/panuavakul/material_tag_editor).
@@ -9,9 +11,9 @@ Note: This package is created on the backbone of [Material Tag Editor](https://g
 Fetch and search async data directly from server or from static data. Use it for multiselect and single, and use it somehow naturally.
 
 <p float="left">
-  <img src="./metadata/staticasync.gif" width="300" />
-  <img src="./metadata/staticmulti.gif" width="300" />
-  <img src="./metadata/single.gif" width="300" />
+  <img src="./metadata/staticasync.gif" width="250" />
+  <img src="./metadata/staticmulti.gif" width="250" />
+  <img src="./metadata/single.gif" width="250" />
 </p>
 
 ## Usage
