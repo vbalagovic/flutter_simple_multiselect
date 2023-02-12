@@ -3,17 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
 class FlutterMultiselectLayoutDelegate extends MultiChildLayoutDelegate {
-  FlutterMultiselectLayoutDelegate({
-    required this.length,
-    required this.minTextFieldWidth,
-    required this.spacing,
-    required this.position
-  });
+  FlutterMultiselectLayoutDelegate(
+      {required this.length,
+      required this.minTextFieldWidth,
+      required this.spacing,
+      required this.position});
 
   final Offset position;
 
   static const tagId = 'tag_';
   static const textFieldId = 'text_field';
+  static const textId = 'text_id';
 
   final int length;
   final double minTextFieldWidth;
@@ -107,7 +107,8 @@ class FlutterMultiselectLayoutDelegate extends MultiChildLayoutDelegate {
           BoxConstraints.loose(Size.fromWidth(size.width)),
         );
         //* Push the cursor down and back to the left
-        cursor = Offset(0, (length > 0 ? (cursor.dy + textFieldSize.height) : 0));
+        cursor =
+            Offset(0, (length > 0 ? (cursor.dy + textFieldSize.height) : 0));
 
         //* Reset the tagSizes for this roll
         tagSizes = <Size>[];
@@ -121,7 +122,8 @@ class FlutterMultiselectLayoutDelegate extends MultiChildLayoutDelegate {
     }
 
     //* Set parent height so that [TagsRenderLayoutBox] can use it to set the parentHeight
-    parentSize = Size(size.width, (length > 0 ? cursor.dy : 0) + textFieldSize.height);
+    parentSize =
+        Size(size.width, (length > 0 ? cursor.dy : 0) + textFieldSize.height);
   }
 
   @override

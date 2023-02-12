@@ -3,17 +3,16 @@ import 'dart:math';
 
 import 'package:debounce_throttle/debounce_throttle.dart';
 import './suggestions_box_controller.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import './suggestions_box_controller.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'dart:developer' as developer;
 
 import 'flutter_multiselect_layout_delegate.dart';
 import 'flutter_multiselect_layout.dart';
 
-typedef SuggestionBuilder<T> = Widget Function(BuildContext context, FlutterMultiselectState<T> state, T data);
+typedef SuggestionBuilder<T> = Widget Function(
+    BuildContext context, FlutterMultiselectState<T> state, T data);
 typedef InputSuggestions<T> = FutureOr<List<T>> Function(String query);
 typedef SearchSuggestions<T> = FutureOr<List<T>> Function();
 
@@ -63,6 +62,8 @@ class FlutterMultiselect<T> extends StatefulWidget {
       this.suggestionPadding,
       this.autoDisposeFocusNode = true,
       this.multiselect = true,
+      this.validator,
+      this.errorStyling,
       this.suggestionMargin})
       : super(key: key);
 
@@ -99,9 +100,9 @@ class FlutterMultiselect<T> extends StatefulWidget {
   /// Focus node for checking if the [TextField] is focused.
   final FocusNode? focusNode;
 
-  /// [TextField]'s properties.
+  /// [TextFormField]'s properties.
   ///
-  /// Please refer to [TextField] documentation.
+  /// Please refer to [TextFormField] documentation.
   final TextEditingController? controller;
   final bool enabled;
   final TextStyle? textStyle;
@@ -125,6 +126,7 @@ class FlutterMultiselect<T> extends StatefulWidget {
   final double? borderSize;
   final EdgeInsets? padding;
   final bool autoDisposeFocusNode;
+  final String? Function(dynamic)? validator;
 
   /// [SuggestionBox]'s properties.
   final double? suggestionsBoxMaxHeight;
@@ -137,6 +139,7 @@ class FlutterMultiselect<T> extends StatefulWidget {
   final bool activateSuggestionBox;
   final EdgeInsets? suggestionMargin;
   final EdgeInsets? suggestionPadding;
+  final TextStyle? errorStyling;
 
   @override
   FlutterMultiselectState<T> createState() => FlutterMultiselectState<T>();
@@ -145,6 +148,7 @@ class FlutterMultiselect<T> extends StatefulWidget {
 class FlutterMultiselectState<T> extends State<FlutterMultiselect<T>> {
   /// A controller to keep value of the [TextField].
   late TextEditingController _textFieldController;
+  String? formError;
 
   /// A state variable for checking if new text is enter.
   var _previousText = '';
@@ -169,7 +173,8 @@ class FlutterMultiselectState<T> extends State<FlutterMultiselect<T>> {
     super.initState();
     _textFieldController = (widget.controller ?? TextEditingController());
 
-    _focusNode = (widget.focusNode ?? FocusNode())..addListener(_onFocusChanged);
+    _focusNode = (widget.focusNode ?? FocusNode())
+      ..addListener(_onFocusChanged);
 
     if (widget.activateSuggestionBox) _initializeSuggestionBox();
   }
@@ -187,7 +192,9 @@ class FlutterMultiselectState<T> extends State<FlutterMultiselect<T>> {
   }
 
   void _initializeSuggestionBox() {
-    _deBouncer = Debouncer<String>(widget.debounceDuration ?? const Duration(milliseconds: 300), initialValue: '');
+    _deBouncer = Debouncer<String>(
+        widget.debounceDuration ?? const Duration(milliseconds: 300),
+        initialValue: '');
 
     _deBouncer?.values.listen((value) {
       _onSearchChanged(value);
@@ -225,13 +232,19 @@ class FlutterMultiselectState<T> extends State<FlutterMultiselect<T>> {
           final renderBoxOffset = renderBox!.localToGlobal(Offset.zero);
           final topAvailableSpace = renderBoxOffset.dy;
           final mq = MediaQuery.of(context);
-          final bottomAvailableSpace = mq.size.height - mq.viewInsets.bottom - renderBoxOffset.dy - size.height;
-          var _suggestionBoxHeight = max(topAvailableSpace, bottomAvailableSpace);
+          final bottomAvailableSpace = mq.size.height -
+              mq.viewInsets.bottom -
+              renderBoxOffset.dy -
+              size.height;
+          var suggestionBoxHeight =
+              max(topAvailableSpace, bottomAvailableSpace);
           if (null != widget.suggestionsBoxMaxHeight) {
-            _suggestionBoxHeight = min(_suggestionBoxHeight, widget.suggestionsBoxMaxHeight!);
+            suggestionBoxHeight =
+                min(suggestionBoxHeight, widget.suggestionsBoxMaxHeight!);
           }
           final showTop = topAvailableSpace > bottomAvailableSpace;
-          final compositedTransformFollowerOffset = showTop ? Offset(0, -size.height) : Offset.zero;
+          final compositedTransformFollowerOffset =
+              showTop ? Offset(0, -size.height) : Offset.zero;
 
           return StreamBuilder<List<T>?>(
             stream: _suggestionsStreamController?.stream,
@@ -243,20 +256,28 @@ class FlutterMultiselectState<T> extends State<FlutterMultiselect<T>> {
                     padding: widget.suggestionMargin ?? EdgeInsets.zero,
                     child: Material(
                       elevation: widget.suggestionsBoxElevation ?? 20,
-                      borderRadius: BorderRadius.circular(widget.suggestionsBoxRadius ?? 20),
-                      color: widget.suggestionsBoxBackgroundColor ?? Colors.white,
+                      borderRadius: BorderRadius.circular(
+                          widget.suggestionsBoxRadius ?? 20),
+                      color:
+                          widget.suggestionsBoxBackgroundColor ?? Colors.white,
                       child: Container(
                           decoration: BoxDecoration(
-                              color: widget.suggestionsBoxBackgroundColor ?? Colors.white,
-                              borderRadius: BorderRadius.all(Radius.circular(widget.suggestionsBoxRadius ?? 0))),
-                          constraints: BoxConstraints(maxHeight: _suggestionBoxHeight),
+                              color: widget.suggestionsBoxBackgroundColor ??
+                                  Colors.white,
+                              borderRadius: BorderRadius.all(Radius.circular(
+                                  widget.suggestionsBoxRadius ?? 0))),
+                          constraints:
+                              BoxConstraints(maxHeight: suggestionBoxHeight),
                           child: ListView.builder(
                             shrinkWrap: true,
-                            padding: widget.suggestionPadding ?? EdgeInsets.zero,
+                            padding:
+                                widget.suggestionPadding ?? EdgeInsets.zero,
                             itemCount: snapshot.data!.length,
                             itemBuilder: (context, index) {
-                              return _suggestions != null && _suggestions?.isNotEmpty == true
-                                  ? widget.suggestionBuilder(context, this, _suggestions![index]!)
+                              return _suggestions != null &&
+                                      _suggestions?.isNotEmpty == true
+                                  ? widget.suggestionBuilder(
+                                      context, this, _suggestions![index]!)
                                   : Container();
                             },
                           )),
@@ -348,9 +369,19 @@ class FlutterMultiselectState<T> extends State<FlutterMultiselect<T>> {
   Widget build(BuildContext context) {
     InputDecoration customDec = widget.inputDecoration ??
         InputDecoration(
+          errorBorder: widget.multiselect
+              ? OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(5),
+                  borderSide: const BorderSide(
+                    color: Colors.white,
+                    width: 0.01,
+                  ))
+              : null,
+          errorStyle: const TextStyle(height: 0.01, color: Colors.transparent),
           isDense: true,
           isCollapsed: true,
-          contentPadding: const EdgeInsets.symmetric(vertical: 13, horizontal: 17),
+          contentPadding:
+              const EdgeInsets.symmetric(vertical: 13, horizontal: 17),
           enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(5),
               borderSide: const BorderSide(
@@ -390,35 +421,156 @@ class FlutterMultiselectState<T> extends State<FlutterMultiselect<T>> {
           _isFocused = true;
         });
       },
-      child: Container(
-        padding: widget.padding != null && widget.length > 0 ? widget.padding : EdgeInsets.zero,
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.all(Radius.circular(widget.borderRadius ?? 0)),
-            border: Border.all(
-                width: widget.borderSize ?? (_isFocused ? 1 : 0.5),
-                color: _isFocused ? widget.focusedBorderColor ?? Colors.transparent : widget.enableBorderColor ?? Colors.transparent),
-            color: widget.backgroundColor ?? Colors.transparent),
-        child: FlutterMultiselectLayout(
-          delegate: FlutterMultiselectLayoutDelegate(
-              length: widget.length, minTextFieldWidth: widget.minTextFieldWidth, spacing: widget.tagSpacing, position: Offset.zero),
-          children: [
-            if (widget.multiselect)
-              ...List<Widget>.generate(
-                widget.length,
-                (index) => LayoutId(
-                  id: FlutterMultiselectLayoutDelegate.getTagId(index),
-                  child: widget.tagBuilder(context, index),
-                ),
-              ),
-            LayoutId(
-                id: FlutterMultiselectLayoutDelegate.textFieldId,
-                child: widget.multiselect
-                    ? (widget.length == 0 || _isFocused
-                        ? TextField(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: widget.padding != null && widget.length > 0
+                ? widget.padding
+                : EdgeInsets.zero,
+            decoration: BoxDecoration(
+                borderRadius:
+                    BorderRadius.all(Radius.circular(widget.borderRadius ?? 0)),
+                border: Border.all(
+                    width: widget.borderSize ?? (_isFocused ? 1 : 0.5),
+                    color: _isFocused
+                        ? widget.focusedBorderColor ?? Colors.transparent
+                        : (widget.multiselect && formError != null)
+                            ? Colors.red[200]!
+                            : (widget.enableBorderColor ?? Colors.transparent)),
+                color: widget.backgroundColor ?? Colors.transparent),
+            child: FlutterMultiselectLayout(
+              delegate: FlutterMultiselectLayoutDelegate(
+                  length: widget.length,
+                  minTextFieldWidth: widget.minTextFieldWidth,
+                  spacing: widget.tagSpacing,
+                  position: Offset.zero),
+              children: [
+                if (widget.multiselect)
+                  ...List<Widget>.generate(
+                    widget.length,
+                    (index) => LayoutId(
+                      id: FlutterMultiselectLayoutDelegate.getTagId(index),
+                      child: widget.tagBuilder(context, index),
+                    ),
+                  ),
+                LayoutId(
+                    id: FlutterMultiselectLayoutDelegate.textFieldId,
+                    child: widget.multiselect
+                        ? (widget.length == 0 || _isFocused
+                            ? TextFormField(
+                                onTap: () {
+                                  if (_isFocused) {
+                                    _onSearchChanged("");
+                                  }
+                                },
+                                validator: (value) {
+                                  if (widget.validator == null) {
+                                    return null;
+                                  }
+                                  setState(() {
+                                    formError = widget.validator!(value);
+                                  });
+                                  return widget.validator!(value);
+                                },
+                                style: widget.textStyle,
+                                focusNode: _focusNode,
+                                enabled: widget.enabled,
+                                controller: _textFieldController,
+                                keyboardType: widget.keyboardType,
+                                keyboardAppearance: widget.keyboardAppearance,
+                                textCapitalization: widget.textCapitalization,
+                                textInputAction: widget.textInputAction,
+                                cursorColor: widget.cursorColor,
+                                autocorrect: widget.autocorrect,
+                                textAlign: widget.textAlign,
+                                textDirection: widget.textDirection,
+                                readOnly: widget.readOnly,
+                                autofocus: widget.autofocus,
+                                maxLines: widget.maxLines,
+                                decoration: decoration,
+                                onChanged: _onTextFieldChange,
+                                onFieldSubmitted: _onSubmitted,
+                                inputFormatters: widget.inputFormatters,
+                              )
+                            : SizedBox(
+                                height: 24,
+                                child: SizedBox(
+                                  height: 0.1,
+                                  child: TextFormField(
+                                    style: const TextStyle(
+                                        fontSize: 0.1,
+                                        color: Colors.transparent),
+                                    readOnly: true,
+                                    enabled: false,
+                                    decoration: InputDecoration(
+                                      errorStyle: const TextStyle(
+                                          height: 0.01,
+                                          color: Colors.transparent),
+                                      errorBorder: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(5),
+                                          borderSide: const BorderSide(
+                                            color: Colors.white,
+                                            width: 0.01,
+                                          )),
+                                      isDense: true,
+                                      isCollapsed: true,
+                                      contentPadding: const EdgeInsets.all(0),
+                                      disabledBorder: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(5),
+                                          borderSide: const BorderSide(
+                                            color: Colors.transparent,
+                                            width: 0.1,
+                                          )),
+                                      focusedBorder: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(5),
+                                          borderSide: const BorderSide(
+                                            color: Colors.transparent,
+                                            width: 0,
+                                          )),
+                                      border: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(5),
+                                          borderSide: const BorderSide(
+                                            color: Colors.transparent,
+                                            width: 0.1,
+                                          )),
+                                      hintText: "",
+                                    ),
+                                    onTap: () {
+                                      if (_isFocused) {
+                                        _onSearchChanged("");
+                                      }
+                                    },
+                                    validator: (value) {
+                                      if (widget.validator == null) {
+                                        return null;
+                                      }
+                                      setState(() {
+                                        formError = widget.validator!(value);
+                                      });
+                                      return widget.validator!(value);
+                                    },
+                                  ),
+                                ),
+                              ))
+                        : TextFormField(
                             onTap: () {
                               if (_isFocused) {
                                 _onSearchChanged("");
                               }
+                            },
+                            validator: (value) {
+                              if (widget.validator == null) {
+                                return null;
+                              }
+                              setState(() {
+                                formError = widget.validator!(value);
+                              });
+                              return widget.validator!(value);
                             },
                             style: widget.textStyle,
                             focusNode: _focusNode,
@@ -437,38 +589,21 @@ class FlutterMultiselectState<T> extends State<FlutterMultiselect<T>> {
                             maxLines: widget.maxLines,
                             decoration: decoration,
                             onChanged: _onTextFieldChange,
-                            onSubmitted: _onSubmitted,
+                            onFieldSubmitted: _onSubmitted,
                             inputFormatters: widget.inputFormatters,
-                          )
-                        : const SizedBox(height: 24))
-                    : TextField(
-                        onTap: () {
-                          if (_isFocused) {
-                            _onSearchChanged("");
-                          }
-                        },
-                        style: widget.textStyle,
-                        focusNode: _focusNode,
-                        enabled: widget.enabled,
-                        controller: _textFieldController,
-                        keyboardType: widget.keyboardType,
-                        keyboardAppearance: widget.keyboardAppearance,
-                        textCapitalization: widget.textCapitalization,
-                        textInputAction: widget.textInputAction,
-                        cursorColor: widget.cursorColor,
-                        autocorrect: widget.autocorrect,
-                        textAlign: widget.textAlign,
-                        textDirection: widget.textDirection,
-                        readOnly: widget.readOnly,
-                        autofocus: widget.autofocus,
-                        maxLines: widget.maxLines,
-                        decoration: decoration,
-                        onChanged: _onTextFieldChange,
-                        onSubmitted: _onSubmitted,
-                        inputFormatters: widget.inputFormatters,
-                      ))
-          ],
-        ),
+                          )),
+              ],
+            ),
+          ),
+          if (formError != null)
+            Padding(
+                padding: const EdgeInsets.symmetric(vertical: 5),
+                child: Text(
+                  formError.toString(),
+                  style:
+                      widget.errorStyling ?? TextStyle(color: Colors.red[200]!),
+                ))
+        ],
       ),
     );
 

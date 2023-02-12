@@ -2,7 +2,7 @@
 
 `v1.0.0`
 
-There are a few multiselect packages for flutter but somehow somehow i haven't found one that is simple like this. It's inspired by the vue multiselect. You can use static or async (server) data and use it as searchable single or multiselect.
+There are a few multiselect packages for flutter but  somehow i haven't found one that is simple like this. It's inspired by the vue multiselect. You can use static or async (server) data and use it as searchable single or multiselect. Everything is customizable.
 
 Note: This package is created on the backbone of [Material Tag Editor](https://github.com/panuavakul/material_tag_editor).
 
@@ -10,10 +10,13 @@ Note: This package is created on the backbone of [Material Tag Editor](https://g
 
 Fetch and search async data directly from server or from static data. Use it for multiselect and single, and use it somehow naturally.
 
+Added validation in v1.0.0
+
 <p float="left">
-  <img src="https://user-images.githubusercontent.com/30495155/212550777-b2b995da-6543-4f17-8acd-ec6506c0bfed.gif" width="250" />
-  <img src="https://user-images.githubusercontent.com/30495155/212550796-708cf939-557e-458c-8f76-23ff9f0d44f2.gif" width="250" />
-  <img src="https://user-images.githubusercontent.com/30495155/212550751-6d4f6944-dc8b-4980-aa5e-b3a674f5168d.gif" width="250" />
+  <img src="https://user-images.githubusercontent.com/30495155/212550777-b2b995da-6543-4f17-8acd-ec6506c0bfed.gif" width="220" />
+  <img src="https://user-images.githubusercontent.com/30495155/212550796-708cf939-557e-458c-8f76-23ff9f0d44f2.gif" width="220" />
+  <img src="https://user-images.githubusercontent.com/30495155/212550751-6d4f6944-dc8b-4980-aa5e-b3a674f5168d.gif" width="220" />
+  <img src="https://user-images.githubusercontent.com/30495155/218328006-bbecffbd-f706-4b0e-a197-58f824eebaa5.gif" width="220" />
 </p>
 
 ## Usage

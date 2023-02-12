@@ -13,7 +13,7 @@ class FlutterMultiselectLayout extends CustomMultiChildLayout {
 
   @override
   FlutterMultiselectRenderLayoutBox createRenderObject(BuildContext context) {
-    return FlutterMultiselectRenderLayoutBox(delegate: delegate as FlutterMultiselectLayoutDelegate);
+    return FlutterMultiselectRenderLayoutBox(
+        delegate: delegate as FlutterMultiselectLayoutDelegate);
   }
-
 }

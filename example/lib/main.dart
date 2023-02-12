@@ -35,6 +35,7 @@ class _MyHomePageState extends State<MyHomePage> {
   List selectedItemsAsync = [];
   Map? singleItem;
   bool isLoading = false;
+  final _formKey = GlobalKey<FormState>();
 
   List<Map<String, dynamic>> testData = [
     {"uuid": 1, "name": "Alfred Johanson"},
@@ -72,17 +73,41 @@ class _MyHomePageState extends State<MyHomePage> {
             onTap: () {
               FocusScope.of(context).unfocus();
             },
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                const Padding(padding: EdgeInsets.only(bottom: 10), child: Text("Static data multiselect")),
-                _staticData(),
-                const Padding(padding: EdgeInsets.only(bottom: 10, top: 20), child: Text("Async data multiselect")),
-                _asyncData(),
-                const Padding(padding: EdgeInsets.only(bottom: 10, top: 20), child: Text("Data single select")),
-                _staticSingleData(),
-              ],
+            child: SingleChildScrollView(
+              child: Form(
+                autovalidateMode: AutovalidateMode.disabled,
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    const Padding(
+                        padding: EdgeInsets.only(bottom: 10),
+                        child: Text("Static data multiselect")),
+                    _staticData(),
+                    const Padding(
+                        padding: EdgeInsets.only(bottom: 10, top: 20),
+                        child: Text("Async data multiselect")),
+                    _asyncData(),
+                    const Padding(
+                        padding: EdgeInsets.only(bottom: 10, top: 20),
+                        child: Text("Data single select")),
+                    _staticSingleData(),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16.0),
+                      child: Center(
+                        child: ElevatedButton(
+                          child: Text("submit"),
+                          onPressed: () {
+                            // Validate returns true if the form is valid, or false otherwise.
+                            if (_formKey.currentState!.validate()) {}
+                          },
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ),
         ));
@@ -92,11 +117,18 @@ class _MyHomePageState extends State<MyHomePage> {
     return FlutterMultiselect(
         multiselect: false,
         autofocus: false,
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 0),
+        padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
         enableBorderColor: lineColor,
         focusedBorderColor: lineColor,
         borderRadius: 5,
         borderSize: 1,
+        validator: (value) {
+          print("--- ${value}");
+          if (value == null || value == "") {
+            return "Required";
+          }
+          return null;
+        },
         resetTextOnSubmitted: true,
         minTextFieldWidth: 300,
         suggestionsBoxMaxHeight: 300,
@@ -122,7 +154,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 onTap: () {
                   singleItem = existing ? null : data;
 
-                  state.selectAndClose(data, singleItem != null ? singleItem!["name"].toString() : "");
+                  state.selectAndClose(data,
+                      singleItem != null ? singleItem!["name"].toString() : "");
                   setState(() {});
                 }),
           );
@@ -161,7 +194,8 @@ class _MyHomePageState extends State<MyHomePage> {
               },
             ),
         suggestionBuilder: (context, state, data) {
-          var existingIndex = selectedItems.indexWhere((element) => element["uuid"] == data["uuid"]);
+          var existingIndex = selectedItems
+              .indexWhere((element) => element["uuid"] == data["uuid"]);
           var selectedData = data;
           return Material(
             child: ListTile(
@@ -206,6 +240,13 @@ class _MyHomePageState extends State<MyHomePage> {
         borderSize: 1,
         resetTextOnSubmitted: true,
         minTextFieldWidth: 300,
+        validator: (value) {
+          print("--- ${selectedItemsAsync.length}");
+          if (selectedItemsAsync.length < 2) {
+            return "Min 2 items required";
+          }
+          return null;
+        },
         suggestionsBoxMaxHeight: 300,
         length: selectedItemsAsync.length,
         isLoading: isLoading,
@@ -218,7 +259,8 @@ class _MyHomePageState extends State<MyHomePage> {
               },
             ),
         suggestionBuilder: (context, state, data) {
-          var existingIndex = selectedItemsAsync.indexWhere((element) => element["uuid"] == data["uuid"]);
+          var existingIndex = selectedItemsAsync
+              .indexWhere((element) => element["uuid"] == data["uuid"]);
           var selectedData = data;
           return Material(
               child: ListTile(
@@ -228,7 +270,8 @@ class _MyHomePageState extends State<MyHomePage> {
                   selectedTileColor: Colors.green,
                   title: Text(selectedData["name"].toString()),
                   onTap: () {
-                    var existingIndex = selectedItemsAsync.indexWhere((element) => element["uuid"] == data["uuid"]);
+                    var existingIndex = selectedItemsAsync.indexWhere(
+                        (element) => element["uuid"] == data["uuid"]);
                     if (existingIndex >= 0) {
                       selectedItemsAsync.removeAt(existingIndex);
                     } else {

@@ -1,6 +1,6 @@
 name: flutter_simple_multiselect
-description: Flutter simple multiselect project.
-version: 0.0.2
+description: Flutter simple multiselect project that can be used with static or async values, also it can be used as single or multiselect and everything is customizable.
+version: 1.0.0
 homepage: https://github.com/vbalagovic/flutter_simple_multiselect.git
 
 environment:
