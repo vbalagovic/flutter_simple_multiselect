@@ -2,6 +2,8 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
+/// This is the layout delegate that is used to layout the tags and the text field.
+/// It is used in [FlutterMultiselectLayout]
 class FlutterMultiselectLayoutDelegate extends MultiChildLayoutDelegate {
   FlutterMultiselectLayoutDelegate(
       {required this.length,
@@ -86,7 +88,7 @@ class FlutterMultiselectLayoutDelegate extends MultiChildLayoutDelegate {
 
     var textFieldSize = Size.zero;
 
-    //* Layout the textbox
+    //* Layout the TextBox
     if (hasChild(textFieldId)) {
       final currentRowWidth = tagSizes.fold<double>(0, (result, tag) {
         return result + tag.width;
@@ -94,7 +96,7 @@ class FlutterMultiselectLayoutDelegate extends MultiChildLayoutDelegate {
       final spacingWidth = spacing * max(tagSizes.length - 1, 0);
       final leftOverWidth = size.width - currentRowWidth - spacingWidth;
       final textWidth = max(leftOverWidth, minTextFieldWidth);
-      //* Check if Textbox is overflowing
+      //* Check if TextBox is overflowing
       //* Check if overflowing
       if (_isOverflow(
         childWidth: textWidth,

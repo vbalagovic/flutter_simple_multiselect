@@ -20,12 +20,12 @@ typedef SearchSuggestions<T> = FutureOr<List<T>> Function();
 /// email address input widget in the iOS app.
 class FlutterMultiselect<T> extends StatefulWidget {
   const FlutterMultiselect(
-      {required this.length,
-      this.minTextFieldWidth = 160.0,
-      this.tagSpacing = 4.0,
-      required this.tagBuilder,
+      {required this.tagBuilder,
       required this.suggestionBuilder,
       required this.findSuggestions,
+      required this.length,
+      this.minTextFieldWidth = 160.0,
+      this.tagSpacing = 4.0,
       Key? key,
       this.focusNode,
       this.isLoading = false,
@@ -176,15 +176,18 @@ class FlutterMultiselectState<T> extends State<FlutterMultiselect<T>> {
     _focusNode = (widget.focusNode ?? FocusNode())
       ..addListener(_onFocusChanged);
 
-    if (widget.activateSuggestionBox) _initializeSuggestionBox();
+    if (widget.activateSuggestionBox) {
+      _initializeSuggestionBox();
+    }
   }
 
   @override
   void dispose() {
     developer.log('FlutterMultiselectState::dispose():');
     if (widget.autoDisposeFocusNode || widget.focusNode == null) {
-      _focusNode.removeListener(_onFocusChanged);
-      _focusNode.dispose();
+      _focusNode
+        ..removeListener(_onFocusChanged)
+        ..dispose();
     }
     _suggestionsStreamController?.close();
     _suggestionsBoxController?.close();
@@ -211,7 +214,7 @@ class FlutterMultiselectState<T> extends State<FlutterMultiselect<T>> {
   void _onFocusChanged() {
     if (_focusNode.hasFocus) {
       _scrollToVisible();
-      _onSearchChanged("");
+      _onSearchChanged('');
       _suggestionsBoxController?.open();
     } else {
       _suggestionsBoxController?.close();
@@ -260,27 +263,30 @@ class FlutterMultiselectState<T> extends State<FlutterMultiselect<T>> {
                           widget.suggestionsBoxRadius ?? 20),
                       color:
                           widget.suggestionsBoxBackgroundColor ?? Colors.white,
-                      child: Container(
-                          decoration: BoxDecoration(
+                      child: ConstrainedBox(
+                        constraints:
+                            BoxConstraints(maxHeight: suggestionBoxHeight),
+                        child: DecoratedBox(
+                            decoration: BoxDecoration(
                               color: widget.suggestionsBoxBackgroundColor ??
                                   Colors.white,
                               borderRadius: BorderRadius.all(Radius.circular(
-                                  widget.suggestionsBoxRadius ?? 0))),
-                          constraints:
-                              BoxConstraints(maxHeight: suggestionBoxHeight),
-                          child: ListView.builder(
-                            shrinkWrap: true,
-                            padding:
-                                widget.suggestionPadding ?? EdgeInsets.zero,
-                            itemCount: snapshot.data!.length,
-                            itemBuilder: (context, index) {
-                              return _suggestions != null &&
-                                      _suggestions?.isNotEmpty == true
-                                  ? widget.suggestionBuilder(
-                                      context, this, _suggestions![index]!)
-                                  : Container();
-                            },
-                          )),
+                                  widget.suggestionsBoxRadius ?? 0)),
+                            ),
+                            child: ListView.builder(
+                              shrinkWrap: true,
+                              padding:
+                                  widget.suggestionPadding ?? EdgeInsets.zero,
+                              itemCount: snapshot.data!.length,
+                              itemBuilder: (context, index) {
+                                return _suggestions != null &&
+                                        _suggestions?.isNotEmpty == true
+                                    ? widget.suggestionBuilder(
+                                        context, this, _suggestions![index]!)
+                                    : const SizedBox.shrink();
+                              },
+                            )),
+                      ),
                     ),
                   ),
                 );
@@ -299,11 +305,11 @@ class FlutterMultiselectState<T> extends State<FlutterMultiselect<T>> {
                   ),
                 );
               }
-              return Container();
+              return const SizedBox.shrink();
             },
           );
         }
-        return Container();
+        return const SizedBox.shrink();
       },
     );
   }
@@ -338,7 +344,7 @@ class FlutterMultiselectState<T> extends State<FlutterMultiselect<T>> {
     Future.delayed(const Duration(milliseconds: 300), () {
       WidgetsBinding.instance.addPostFrameCallback((_) async {
         final renderBox = context.findRenderObject() as RenderBox;
-        await Scrollable.of(context)?.position.ensureVisible(renderBox);
+        await Scrollable.of(context).position.ensureVisible(renderBox);
       });
     });
   }
@@ -349,7 +355,7 @@ class FlutterMultiselectState<T> extends State<FlutterMultiselect<T>> {
     if (widget.multiselect) {
       _resetTextField();
     } else {
-      _textFieldController.text = newString ?? "";
+      _textFieldController.text = newString ?? '';
     }
   }
 
@@ -367,7 +373,7 @@ class FlutterMultiselectState<T> extends State<FlutterMultiselect<T>> {
 
   @override
   Widget build(BuildContext context) {
-    InputDecoration customDec = widget.inputDecoration ??
+    final InputDecoration customDec = widget.inputDecoration ??
         InputDecoration(
           errorBorder: widget.multiselect
               ? OutlineInputBorder(
@@ -400,7 +406,7 @@ class FlutterMultiselectState<T> extends State<FlutterMultiselect<T>> {
                 color: Colors.transparent,
                 width: 0,
               )),
-          hintText: "Type to search",
+          hintText: 'Type to search',
         );
     final decoration = widget.isLoading
         ? customDec.copyWith(
@@ -461,7 +467,7 @@ class FlutterMultiselectState<T> extends State<FlutterMultiselect<T>> {
                             ? TextFormField(
                                 onTap: () {
                                   if (_isFocused) {
-                                    _onSearchChanged("");
+                                    _onSearchChanged('');
                                   }
                                 },
                                 validator: (value) {
@@ -538,11 +544,11 @@ class FlutterMultiselectState<T> extends State<FlutterMultiselect<T>> {
                                             color: Colors.transparent,
                                             width: 0.1,
                                           )),
-                                      hintText: "",
+                                      hintText: '',
                                     ),
                                     onTap: () {
                                       if (_isFocused) {
-                                        _onSearchChanged("");
+                                        _onSearchChanged('');
                                       }
                                     },
                                     validator: (value) {
@@ -560,7 +566,7 @@ class FlutterMultiselectState<T> extends State<FlutterMultiselect<T>> {
                         : TextFormField(
                             onTap: () {
                               if (_isFocused) {
-                                _onSearchChanged("");
+                                _onSearchChanged('');
                               }
                             },
                             validator: (value) {
@@ -625,7 +631,7 @@ class FlutterMultiselectState<T> extends State<FlutterMultiselect<T>> {
             itemChild,
             CompositedTransformTarget(
               link: _layerLink,
-              child: Container(),
+              child: const SizedBox.shrink(),
             ),
           ],
         ),
