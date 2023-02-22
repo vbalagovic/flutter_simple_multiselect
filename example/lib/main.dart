@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_simple_multiselect/flutter_simple_multiselect.dart';
 
@@ -38,22 +39,22 @@ class _MyHomePageState extends State<MyHomePage> {
   final _formKey = GlobalKey<FormState>();
 
   List<Map<String, dynamic>> testData = [
-    {"uuid": 1, "name": "Alfred Johanson"},
-    {"uuid": 2, "name": "Goran Borovic"},
-    {"uuid": 3, "name": "Ivan Horvat"},
-    {"uuid": 4, "name": "Bjorn Sigurdson"}
+    {'uuid': 1, 'name': 'Alfred Johanson'},
+    {'uuid': 2, 'name': 'Goran Borovic'},
+    {'uuid': 3, 'name': 'Ivan Horvat'},
+    {'uuid': 4, 'name': 'Bjorn Sigurdson'}
   ];
 
   Future<List<Map<String, dynamic>>> searchFunction(query) async {
     return testData.where((element) {
-      return element["name"].toLowerCase().contains(query.toLowerCase());
+      return element['name'].toLowerCase().contains(query.toLowerCase());
     }).toList();
   }
 
   Future<List<Map<String, dynamic>>> searchFunctionAsync(query) async {
     return Future.delayed(const Duration(seconds: 1), () {
       return testData.where((element) {
-        return element["name"].toLowerCase().contains(query.toLowerCase());
+        return element['name'].toLowerCase().contains(query.toLowerCase());
       }).toList();
     });
   }
@@ -83,21 +84,21 @@ class _MyHomePageState extends State<MyHomePage> {
                   children: <Widget>[
                     const Padding(
                         padding: EdgeInsets.only(bottom: 10),
-                        child: Text("Static data multiselect")),
+                        child: Text('Static data multiselect')),
                     _staticData(),
                     const Padding(
                         padding: EdgeInsets.only(bottom: 10, top: 20),
-                        child: Text("Async data multiselect")),
+                        child: Text('Async data multiselect')),
                     _asyncData(),
                     const Padding(
                         padding: EdgeInsets.only(bottom: 10, top: 20),
-                        child: Text("Data single select")),
+                        child: Text('Data single select')),
                     _staticSingleData(),
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 16.0),
                       child: Center(
                         child: ElevatedButton(
-                          child: Text("submit"),
+                          child: const Text('submit'),
                           onPressed: () {
                             // Validate returns true if the form is valid, or false otherwise.
                             if (_formKey.currentState!.validate()) {}
@@ -123,9 +124,11 @@ class _MyHomePageState extends State<MyHomePage> {
         borderRadius: 5,
         borderSize: 1,
         validator: (value) {
-          print("--- ${value}");
-          if (value == null || value == "") {
-            return "Required";
+          if (kDebugMode) {
+            print('--- $value');
+          }
+          if (value == null || value == '') {
+            return 'Required';
           }
           return null;
         },
@@ -135,7 +138,7 @@ class _MyHomePageState extends State<MyHomePage> {
         length: 1,
         tagBuilder: (context, index) => SelectTag(
               index: index,
-              label: selectedItems[index]["name"],
+              label: selectedItems[index]['name'],
               onDeleted: (value) {
                 selectedItems.removeAt(index);
                 setState(() {});
@@ -150,12 +153,12 @@ class _MyHomePageState extends State<MyHomePage> {
                 selectedColor: Colors.white,
                 selectedTileColor: Colors.green,
                 dense: true,
-                title: Text(data["name"].toString()),
+                title: Text(data['name'].toString()),
                 onTap: () {
                   singleItem = existing ? null : data;
 
                   state.selectAndClose(data,
-                      singleItem != null ? singleItem!["name"].toString() : "");
+                      singleItem != null ? singleItem!['name'].toString() : '');
                   setState(() {});
                 }),
           );
@@ -187,7 +190,7 @@ class _MyHomePageState extends State<MyHomePage> {
         length: selectedItems.length,
         tagBuilder: (context, index) => SelectTag(
               index: index,
-              label: selectedItems[index]["name"],
+              label: selectedItems[index]['name'],
               onDeleted: (value) {
                 selectedItems.removeAt(index);
                 setState(() {});
@@ -195,7 +198,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
         suggestionBuilder: (context, state, data) {
           var existingIndex = selectedItems
-              .indexWhere((element) => element["uuid"] == data["uuid"]);
+              .indexWhere((element) => element['uuid'] == data['uuid']);
           var selectedData = data;
           return Material(
             child: ListTile(
@@ -204,7 +207,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 trailing: existingIndex >= 0 ? const Icon(Icons.check) : null,
                 selectedColor: Colors.white,
                 selectedTileColor: Colors.green,
-                title: Text(selectedData["name"].toString()),
+                title: Text(selectedData['name'].toString()),
                 onTap: () {
                   if (existingIndex >= 0) {
                     selectedItems.removeAt(existingIndex);
@@ -241,9 +244,11 @@ class _MyHomePageState extends State<MyHomePage> {
         resetTextOnSubmitted: true,
         minTextFieldWidth: 300,
         validator: (value) {
-          print("--- ${selectedItemsAsync.length}");
+          if (kDebugMode) {
+            print('--- ${selectedItemsAsync.length}');
+          }
           if (selectedItemsAsync.length < 2) {
-            return "Min 2 items required";
+            return 'Min 2 items required';
           }
           return null;
         },
@@ -252,7 +257,7 @@ class _MyHomePageState extends State<MyHomePage> {
         isLoading: isLoading,
         tagBuilder: (context, index) => SelectTag(
               index: index,
-              label: selectedItemsAsync[index]["name"],
+              label: selectedItemsAsync[index]['name'],
               onDeleted: (value) {
                 selectedItemsAsync.removeAt(index);
                 setState(() {});
@@ -260,7 +265,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
         suggestionBuilder: (context, state, data) {
           var existingIndex = selectedItemsAsync
-              .indexWhere((element) => element["uuid"] == data["uuid"]);
+              .indexWhere((element) => element['uuid'] == data['uuid']);
           var selectedData = data;
           return Material(
               child: ListTile(
@@ -268,10 +273,10 @@ class _MyHomePageState extends State<MyHomePage> {
                   trailing: existingIndex >= 0 ? const Icon(Icons.check) : null,
                   selectedColor: Colors.white,
                   selectedTileColor: Colors.green,
-                  title: Text(selectedData["name"].toString()),
+                  title: Text(selectedData['name'].toString()),
                   onTap: () {
                     var existingIndex = selectedItemsAsync.indexWhere(
-                        (element) => element["uuid"] == data["uuid"]);
+                        (element) => element['uuid'] == data['uuid']);
                     if (existingIndex >= 0) {
                       selectedItemsAsync.removeAt(existingIndex);
                     } else {
