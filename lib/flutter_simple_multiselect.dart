@@ -64,6 +64,7 @@ class FlutterMultiselect<T> extends StatefulWidget {
       this.multiselect = true,
       this.validator,
       this.errorStyling,
+      this.errorBorderColor,
       this.suggestionMargin})
       : super(key: key);
 
@@ -140,6 +141,7 @@ class FlutterMultiselect<T> extends StatefulWidget {
   final EdgeInsets? suggestionMargin;
   final EdgeInsets? suggestionPadding;
   final TextStyle? errorStyling;
+  final Color? errorBorderColor;
 
   @override
   FlutterMultiselectState<T> createState() => FlutterMultiselectState<T>();
@@ -212,6 +214,9 @@ class FlutterMultiselectState<T> extends State<FlutterMultiselect<T>> {
     if (_focusNode.hasFocus) {
       _scrollToVisible();
       _onSearchChanged("");
+      setState(() {
+        formError = null;
+      });
       _suggestionsBoxController?.open();
     } else {
       _suggestionsBoxController?.close();
@@ -259,11 +264,11 @@ class FlutterMultiselectState<T> extends State<FlutterMultiselect<T>> {
                       borderRadius: BorderRadius.circular(
                           widget.suggestionsBoxRadius ?? 20),
                       color:
-                          widget.suggestionsBoxBackgroundColor ?? Colors.white,
+                          widget.suggestionsBoxBackgroundColor ?? Colors.transparent,
                       child: Container(
                           decoration: BoxDecoration(
                               color: widget.suggestionsBoxBackgroundColor ??
-                                  Colors.white,
+                                  Colors.transparent,
                               borderRadius: BorderRadius.all(Radius.circular(
                                   widget.suggestionsBoxRadius ?? 0))),
                           constraints:
@@ -338,7 +343,7 @@ class FlutterMultiselectState<T> extends State<FlutterMultiselect<T>> {
     Future.delayed(const Duration(milliseconds: 300), () {
       WidgetsBinding.instance.addPostFrameCallback((_) async {
         final renderBox = context.findRenderObject() as RenderBox;
-        await Scrollable.of(context)?.position.ensureVisible(renderBox);
+        await Scrollable.of(context).position.ensureVisible(renderBox);
       });
     });
   }
@@ -373,10 +378,15 @@ class FlutterMultiselectState<T> extends State<FlutterMultiselect<T>> {
               ? OutlineInputBorder(
                   borderRadius: BorderRadius.circular(5),
                   borderSide: const BorderSide(
-                    color: Colors.white,
+                    color: Colors.transparent,
                     width: 0.01,
                   ))
-              : null,
+              : OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(5),
+                  borderSide: const BorderSide(
+                    color: Colors.transparent,
+                    width: 0.01,
+                  )),
           errorStyle: const TextStyle(height: 0.01, color: Colors.transparent),
           isDense: true,
           isCollapsed: true,
@@ -435,8 +445,8 @@ class FlutterMultiselectState<T> extends State<FlutterMultiselect<T>> {
                     width: widget.borderSize ?? (_isFocused ? 1 : 0.5),
                     color: _isFocused
                         ? widget.focusedBorderColor ?? Colors.transparent
-                        : (widget.multiselect && formError != null)
-                            ? Colors.red[200]!
+                        : (formError != null)
+                            ? (widget.errorBorderColor ?? Theme.of(context).colorScheme.error)
                             : (widget.enableBorderColor ?? Colors.transparent)),
                 color: widget.backgroundColor ?? Colors.transparent),
             child: FlutterMultiselectLayout(
@@ -488,7 +498,7 @@ class FlutterMultiselectState<T> extends State<FlutterMultiselect<T>> {
                                 readOnly: widget.readOnly,
                                 autofocus: widget.autofocus,
                                 maxLines: widget.maxLines,
-                                decoration: decoration,
+                                decoration: decoration.copyWith(border: InputBorder.none),
                                 onChanged: _onTextFieldChange,
                                 onFieldSubmitted: _onSubmitted,
                                 inputFormatters: widget.inputFormatters,
@@ -511,7 +521,7 @@ class FlutterMultiselectState<T> extends State<FlutterMultiselect<T>> {
                                           borderRadius:
                                               BorderRadius.circular(5),
                                           borderSide: const BorderSide(
-                                            color: Colors.white,
+                                            color: Colors.transparent,
                                             width: 0.01,
                                           )),
                                       isDense: true,
@@ -587,7 +597,7 @@ class FlutterMultiselectState<T> extends State<FlutterMultiselect<T>> {
                             readOnly: widget.readOnly,
                             autofocus: widget.autofocus,
                             maxLines: widget.maxLines,
-                            decoration: decoration,
+                            decoration: decoration.copyWith(border: InputBorder.none),
                             onChanged: _onTextFieldChange,
                             onFieldSubmitted: _onSubmitted,
                             inputFormatters: widget.inputFormatters,
@@ -597,11 +607,11 @@ class FlutterMultiselectState<T> extends State<FlutterMultiselect<T>> {
           ),
           if (formError != null)
             Padding(
-                padding: const EdgeInsets.symmetric(vertical: 5),
+                padding: const EdgeInsets.only(top: 7, left: 20),
                 child: Text(
                   formError.toString(),
                   style:
-                      widget.errorStyling ?? TextStyle(color: Colors.red[200]!),
+                      widget.errorStyling ?? Theme.of(context).textTheme.bodySmall!.copyWith(color: Theme.of(context).colorScheme.error),
                 ))
         ],
       ),

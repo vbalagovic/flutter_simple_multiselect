@@ -60,19 +60,18 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          // Here we take the value from the MyHomePage object that was created by
-          // the App.build method, and use it to set our appbar title.
-          title: Text(widget.title),
-        ),
-        body: Padding(
-          padding: const EdgeInsets.all(20),
-          child: GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onTap: () {
-              FocusScope.of(context).unfocus();
-            },
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () {
+        FocusScope.of(context).unfocus();
+      },
+      child: Scaffold(
+          appBar: AppBar(
+            // Here we take the value from the MyHomePage object that was created by
+            title: Text(widget.title),
+          ),
+          body: Padding(
+            padding: const EdgeInsets.all(20),
             child: SingleChildScrollView(
               child: Form(
                 autovalidateMode: AutovalidateMode.disabled,
@@ -81,23 +80,17 @@ class _MyHomePageState extends State<MyHomePage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    const Padding(
-                        padding: EdgeInsets.only(bottom: 10),
-                        child: Text("Static data multiselect")),
+                    const Padding(padding: EdgeInsets.only(bottom: 10), child: Text("Static data multiselect")),
                     _staticData(),
-                    const Padding(
-                        padding: EdgeInsets.only(bottom: 10, top: 20),
-                        child: Text("Async data multiselect")),
+                    const Padding(padding: EdgeInsets.only(bottom: 10, top: 20), child: Text("Async data multiselect")),
                     _asyncData(),
-                    const Padding(
-                        padding: EdgeInsets.only(bottom: 10, top: 20),
-                        child: Text("Data single select")),
+                    const Padding(padding: EdgeInsets.only(bottom: 10, top: 20), child: Text("Data single select")),
                     _staticSingleData(),
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 16.0),
                       child: Center(
                         child: ElevatedButton(
-                          child: Text("submit"),
+                          child: const Text("submit"),
                           onPressed: () {
                             // Validate returns true if the form is valid, or false otherwise.
                             if (_formKey.currentState!.validate()) {}
@@ -109,8 +102,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ),
             ),
-          ),
-        ));
+          )),
+    );
   }
 
   Widget _staticSingleData() {
@@ -121,9 +114,8 @@ class _MyHomePageState extends State<MyHomePage> {
         enableBorderColor: lineColor,
         focusedBorderColor: lineColor,
         borderRadius: 5,
-        borderSize: 1,
+        borderSize: 2,
         validator: (value) {
-          print("--- ${value}");
           if (value == null || value == "") {
             return "Required";
           }
@@ -154,8 +146,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 onTap: () {
                   singleItem = existing ? null : data;
 
-                  state.selectAndClose(data,
-                      singleItem != null ? singleItem!["name"].toString() : "");
+                  state.selectAndClose(data, singleItem != null ? singleItem!["name"].toString() : "");
                   setState(() {});
                 }),
           );
@@ -180,7 +171,7 @@ class _MyHomePageState extends State<MyHomePage> {
         enableBorderColor: lineColor,
         focusedBorderColor: lineColor,
         borderRadius: 5,
-        borderSize: 1,
+        borderSize: 2,
         resetTextOnSubmitted: true,
         minTextFieldWidth: 300,
         suggestionsBoxMaxHeight: 300,
@@ -194,8 +185,7 @@ class _MyHomePageState extends State<MyHomePage> {
               },
             ),
         suggestionBuilder: (context, state, data) {
-          var existingIndex = selectedItems
-              .indexWhere((element) => element["uuid"] == data["uuid"]);
+          var existingIndex = selectedItems.indexWhere((element) => element["uuid"] == data["uuid"]);
           var selectedData = data;
           return Material(
             child: ListTile(
@@ -237,11 +227,10 @@ class _MyHomePageState extends State<MyHomePage> {
         enableBorderColor: lineColor,
         focusedBorderColor: lineColor,
         borderRadius: 5,
-        borderSize: 1,
+        borderSize: 2,
         resetTextOnSubmitted: true,
         minTextFieldWidth: 300,
         validator: (value) {
-          print("--- ${selectedItemsAsync.length}");
           if (selectedItemsAsync.length < 2) {
             return "Min 2 items required";
           }
@@ -259,8 +248,7 @@ class _MyHomePageState extends State<MyHomePage> {
               },
             ),
         suggestionBuilder: (context, state, data) {
-          var existingIndex = selectedItemsAsync
-              .indexWhere((element) => element["uuid"] == data["uuid"]);
+          var existingIndex = selectedItemsAsync.indexWhere((element) => element["uuid"] == data["uuid"]);
           var selectedData = data;
           return Material(
               child: ListTile(
@@ -270,8 +258,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   selectedTileColor: Colors.green,
                   title: Text(selectedData["name"].toString()),
                   onTap: () {
-                    var existingIndex = selectedItemsAsync.indexWhere(
-                        (element) => element["uuid"] == data["uuid"]);
+                    var existingIndex = selectedItemsAsync.indexWhere((element) => element["uuid"] == data["uuid"]);
                     if (existingIndex >= 0) {
                       selectedItemsAsync.removeAt(existingIndex);
                     } else {

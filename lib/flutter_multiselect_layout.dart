@@ -5,6 +5,7 @@ import './flutter_multiselect_layout_delegate.dart';
 /// This is just a normal [CustomMultiChildLayout] with
 /// overrided [createRenderObject] to use custom [RenderCustomMultiChildLayoutBox]
 class FlutterMultiselectLayout extends CustomMultiChildLayout {
+  // ignore: prefer_const_constructors_in_immutables
   FlutterMultiselectLayout({
     Key? key,
     required FlutterMultiselectLayoutDelegate delegate,

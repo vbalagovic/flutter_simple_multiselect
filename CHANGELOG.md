@@ -13,3 +13,7 @@ Updated description and lints
 ## 1.0.0
 
 Added validation
+
+## 2.0.0
+
+Migrated to dart 3, updated styling for errors
