@@ -65,7 +65,9 @@ class FlutterMultiselect<T> extends StatefulWidget {
       this.validator,
       this.errorStyling,
       this.errorBorderColor,
-      this.suggestionMargin})
+      this.suggestionMargin, 
+      this.collapsedHeight,
+      })
       : super(key: key);
 
   /// Multiple choices
@@ -142,6 +144,8 @@ class FlutterMultiselect<T> extends StatefulWidget {
   final EdgeInsets? suggestionPadding;
   final TextStyle? errorStyling;
   final Color? errorBorderColor;
+
+  final double? collapsedHeight;
 
   @override
   FlutterMultiselectState<T> createState() => FlutterMultiselectState<T>();
@@ -504,7 +508,7 @@ class FlutterMultiselectState<T> extends State<FlutterMultiselect<T>> {
                                 inputFormatters: widget.inputFormatters,
                               )
                             : SizedBox(
-                                height: 24,
+                                height: widget.collapsedHeight ?? 24,
                                 child: SizedBox(
                                   height: 0.1,
                                   child: TextFormField(
