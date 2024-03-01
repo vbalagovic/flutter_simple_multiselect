@@ -548,7 +548,6 @@ class FlutterMultiselectState<T> extends State<FlutterMultiselect<T>> {
                                             color: Colors.transparent,
                                             width: 0.1,
                                           )),
-                                      hintText: "",
                                     ),
                                     onTap: () {
                                       if (_isFocused) {
