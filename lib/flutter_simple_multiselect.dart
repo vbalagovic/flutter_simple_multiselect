@@ -270,6 +270,7 @@ class FlutterMultiselectState<T> extends State<FlutterMultiselect<T>> {
                       color:
                           widget.suggestionsBoxBackgroundColor ?? Colors.transparent,
                       child: Container(
+                        clipBehavior: Clip.hardEdge,
                           decoration: BoxDecoration(
                               color: widget.suggestionsBoxBackgroundColor ??
                                   Colors.transparent,
