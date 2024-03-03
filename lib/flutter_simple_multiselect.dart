@@ -19,56 +19,57 @@ typedef SearchSuggestions<T> = FutureOr<List<T>> Function();
 /// A [Widget] for editing tag similar to Google's Gmail
 /// email address input widget in the iOS app.
 class FlutterMultiselect<T> extends StatefulWidget {
-  const FlutterMultiselect(
-      {required this.length,
-      this.minTextFieldWidth = 160.0,
-      this.tagSpacing = 4.0,
-      required this.tagBuilder,
-      required this.suggestionBuilder,
-      required this.findSuggestions,
-      Key? key,
-      this.focusNode,
-      this.isLoading = false,
-      this.enabled = true,
-      this.controller,
-      this.textStyle,
-      this.inputDecoration,
-      this.keyboardType,
-      this.textInputAction,
-      this.textCapitalization = TextCapitalization.none,
-      this.textAlign = TextAlign.start,
-      this.textDirection,
-      this.readOnly = false,
-      this.autofocus = false,
-      this.autocorrect = false,
-      this.maxLines = 1,
-      this.resetTextOnSubmitted = false,
-      this.onSubmitted,
-      this.inputFormatters,
-      this.keyboardAppearance,
-      this.suggestionsBoxMaxHeight,
-      this.suggestionsBoxElevation,
-      this.suggestionsBoxBackgroundColor,
-      this.suggestionsBoxRadius,
-      this.debounceDuration,
-      this.activateSuggestionBox = true,
-      this.cursorColor,
-      this.backgroundColor,
-      this.focusedBorderColor,
-      this.enableBorderColor,
-      this.borderRadius,
-      this.borderSize,
-      this.padding,
-      this.suggestionPadding,
-      this.autoDisposeFocusNode = true,
-      this.multiselect = true,
-      this.validator,
-      this.errorStyling,
-      this.errorBorderColor,
-      this.suggestionMargin, 
-      this.collapsedHeight,
-      })
-      : super(key: key);
+  const FlutterMultiselect({
+    required this.length,
+    this.minTextFieldWidth = 160.0,
+    this.tagSpacing = 4.0,
+    required this.tagBuilder,
+    required this.suggestionBuilder,
+    required this.findSuggestions,
+    Key? key,
+    this.focusNode,
+    this.isLoading = false,
+    this.enabled = true,
+    this.controller,
+    this.textStyle,
+    this.inputDecoration,
+    this.keyboardType,
+    this.textInputAction,
+    this.textCapitalization = TextCapitalization.none,
+    this.textAlign = TextAlign.start,
+    this.textDirection,
+    this.readOnly = false,
+    this.autofocus = false,
+    this.autocorrect = false,
+    this.maxLines = 1,
+    this.resetTextOnSubmitted = false,
+    this.onSubmitted,
+    this.inputFormatters,
+    this.keyboardAppearance,
+    this.suggestionsBoxMaxHeight,
+    this.suggestionsBoxElevation,
+    this.suggestionsBoxBackgroundColor,
+    this.suggestionsBoxRadius,
+    this.debounceDuration,
+    this.activateSuggestionBox = true,
+    this.cursorColor,
+    this.backgroundColor,
+    this.focusedBorderColor,
+    this.enableBorderColor,
+    this.borderRadius,
+    this.borderSize,
+    this.padding,
+    this.suggestionPadding,
+    this.autoDisposeFocusNode = true,
+    this.multiselect = true,
+    this.validator,
+    this.errorStyling,
+    this.errorBorderColor,
+    this.suggestionMargin,
+    this.collapsedHeight,
+    this.unfocusedInputDecoration,
+    this.leadingSelectionPadding,
+  }) : super(key: key);
 
   /// Multiple choices
   final bool multiselect;
@@ -110,6 +111,7 @@ class FlutterMultiselect<T> extends StatefulWidget {
   final bool enabled;
   final TextStyle? textStyle;
   final InputDecoration? inputDecoration;
+  final InputDecoration? unfocusedInputDecoration;
   final TextInputType? keyboardType;
   final TextInputAction? textInputAction;
   final TextCapitalization textCapitalization;
@@ -146,6 +148,7 @@ class FlutterMultiselect<T> extends StatefulWidget {
   final Color? errorBorderColor;
 
   final double? collapsedHeight;
+  final double? leadingSelectionPadding;
 
   @override
   FlutterMultiselectState<T> createState() => FlutterMultiselectState<T>();
@@ -266,16 +269,40 @@ class FlutterMultiselectState<T> extends State<FlutterMultiselect<T>> {
                     child: Material(
                       elevation: widget.suggestionsBoxElevation ?? 20,
                       borderRadius: BorderRadius.circular(
-                          widget.suggestionsBoxRadius ?? 20),
-                      color:
-                          widget.suggestionsBoxBackgroundColor ?? Colors.transparent,
+                        widget.suggestionsBoxRadius ?? 20,
+                      ),
+                      color: widget.suggestionsBoxBackgroundColor ??
+                          Colors.transparent,
                       child: Container(
-                        clipBehavior: Clip.hardEdge,
+                          clipBehavior: Clip.hardEdge,
                           decoration: BoxDecoration(
-                              color: widget.suggestionsBoxBackgroundColor ??
-                                  Colors.transparent,
-                              borderRadius: BorderRadius.all(Radius.circular(
-                                  widget.suggestionsBoxRadius ?? 0))),
+                            color: widget.suggestionsBoxBackgroundColor ??
+                                Colors.transparent,
+                            borderRadius: showTop
+                                ? BorderRadius.only(
+                                    topLeft: Radius.circular(
+                                        widget.suggestionsBoxRadius ?? 0),
+                                    topRight: Radius.circular(
+                                        widget.suggestionsBoxRadius ?? 0),
+                                  )
+                                : BorderRadius.only(
+                                    bottomLeft: Radius.circular(
+                                        widget.suggestionsBoxRadius ?? 0),
+                                    bottomRight: Radius.circular(
+                                        widget.suggestionsBoxRadius ?? 0),
+                                  ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.5),
+                                spreadRadius: 3,
+                                blurRadius: 10,
+                                offset: Offset(
+                                  0,
+                                  showTop ? -5 : 10,
+                                ), // changes position of shadow
+                              ),
+                            ],
+                          ),
                           constraints:
                               BoxConstraints(maxHeight: suggestionBoxHeight),
                           child: ListView.builder(
@@ -451,7 +478,8 @@ class FlutterMultiselectState<T> extends State<FlutterMultiselect<T>> {
                     color: _isFocused
                         ? widget.focusedBorderColor ?? Colors.transparent
                         : (formError != null)
-                            ? (widget.errorBorderColor ?? Theme.of(context).colorScheme.error)
+                            ? (widget.errorBorderColor ??
+                                Theme.of(context).colorScheme.error)
                             : (widget.enableBorderColor ?? Colors.transparent)),
                 color: widget.backgroundColor ?? Colors.transparent),
             child: FlutterMultiselectLayout(
@@ -503,7 +531,8 @@ class FlutterMultiselectState<T> extends State<FlutterMultiselect<T>> {
                                 readOnly: widget.readOnly,
                                 autofocus: widget.autofocus,
                                 maxLines: widget.maxLines,
-                                decoration: decoration.copyWith(border: InputBorder.none),
+                                decoration: decoration.copyWith(
+                                    border: InputBorder.none),
                                 onChanged: _onTextFieldChange,
                                 onFieldSubmitted: _onSubmitted,
                                 inputFormatters: widget.inputFormatters,
@@ -518,42 +547,45 @@ class FlutterMultiselectState<T> extends State<FlutterMultiselect<T>> {
                                         color: Colors.transparent),
                                     readOnly: true,
                                     enabled: false,
-                                    decoration: InputDecoration(
-                                      errorStyle: const TextStyle(
-                                          height: 0.01,
-                                          color: Colors.transparent),
-                                      errorBorder: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(5),
-                                          borderSide: const BorderSide(
-                                            color: Colors.transparent,
-                                            width: 0.01,
-                                          )),
-                                      isDense: true,
-                                      isCollapsed: true,
-                                      contentPadding: const EdgeInsets.all(0),
-                                      disabledBorder: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(5),
-                                          borderSide: const BorderSide(
-                                            color: Colors.transparent,
-                                            width: 0.1,
-                                          )),
-                                      focusedBorder: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(5),
-                                          borderSide: const BorderSide(
-                                            color: Colors.transparent,
-                                            width: 0,
-                                          )),
-                                      border: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(5),
-                                          borderSide: const BorderSide(
-                                            color: Colors.transparent,
-                                            width: 0.1,
-                                          )),
-                                    ),
+                                    decoration: widget
+                                            .unfocusedInputDecoration ??
+                                        InputDecoration(
+                                          errorStyle: const TextStyle(
+                                              height: 0.01,
+                                              color: Colors.transparent),
+                                          errorBorder: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(5),
+                                              borderSide: const BorderSide(
+                                                color: Colors.transparent,
+                                                width: 0.01,
+                                              )),
+                                          isDense: true,
+                                          isCollapsed: true,
+                                          contentPadding:
+                                              const EdgeInsets.all(0),
+                                          disabledBorder: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(5),
+                                              borderSide: const BorderSide(
+                                                color: Colors.transparent,
+                                                width: 0.1,
+                                              )),
+                                          focusedBorder: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(5),
+                                              borderSide: const BorderSide(
+                                                color: Colors.transparent,
+                                                width: 0,
+                                              )),
+                                          border: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(5),
+                                              borderSide: const BorderSide(
+                                                color: Colors.transparent,
+                                                width: 0.1,
+                                              )),
+                                        ),
                                     onTap: () {
                                       if (_isFocused) {
                                         _onSearchChanged("");
@@ -601,7 +633,8 @@ class FlutterMultiselectState<T> extends State<FlutterMultiselect<T>> {
                             readOnly: widget.readOnly,
                             autofocus: widget.autofocus,
                             maxLines: widget.maxLines,
-                            decoration: decoration.copyWith(border: InputBorder.none),
+                            decoration:
+                                decoration.copyWith(border: InputBorder.none),
                             onChanged: _onTextFieldChange,
                             onFieldSubmitted: _onSubmitted,
                             inputFormatters: widget.inputFormatters,
@@ -614,8 +647,11 @@ class FlutterMultiselectState<T> extends State<FlutterMultiselect<T>> {
                 padding: const EdgeInsets.only(top: 7, left: 20),
                 child: Text(
                   formError.toString(),
-                  style:
-                      widget.errorStyling ?? Theme.of(context).textTheme.bodySmall!.copyWith(color: Theme.of(context).colorScheme.error),
+                  style: widget.errorStyling ??
+                      Theme.of(context)
+                          .textTheme
+                          .bodySmall!
+                          .copyWith(color: Theme.of(context).colorScheme.error),
                 ))
         ],
       ),

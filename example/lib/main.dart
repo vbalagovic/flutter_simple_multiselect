@@ -80,11 +80,17 @@ class _MyHomePageState extends State<MyHomePage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    const Padding(padding: EdgeInsets.only(bottom: 10), child: Text("Static data multiselect")),
+                    const Padding(
+                        padding: EdgeInsets.only(bottom: 10),
+                        child: Text("Static data multiselect")),
                     _staticData(),
-                    const Padding(padding: EdgeInsets.only(bottom: 10, top: 20), child: Text("Async data multiselect")),
+                    const Padding(
+                        padding: EdgeInsets.only(bottom: 10, top: 20),
+                        child: Text("Async data multiselect")),
                     _asyncData(),
-                    const Padding(padding: EdgeInsets.only(bottom: 10, top: 20), child: Text("Data single select")),
+                    const Padding(
+                        padding: EdgeInsets.only(bottom: 10, top: 20),
+                        child: Text("Data single select")),
                     _staticSingleData(),
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 16.0),
@@ -146,12 +152,14 @@ class _MyHomePageState extends State<MyHomePage> {
                 onTap: () {
                   singleItem = existing ? null : data;
 
-                  state.selectAndClose(data, singleItem != null ? singleItem!["name"].toString() : "");
+                  state.selectAndClose(data,
+                      singleItem != null ? singleItem!["name"].toString() : "");
                   setState(() {});
                 }),
           );
         },
-        suggestionsBoxElevation: 10,
+        suggestionsBoxElevation: 0,
+        suggestionsBoxRadius: 12,
         findSuggestions: (String query) async {
           setState(() {
             isLoading = true;
@@ -185,7 +193,8 @@ class _MyHomePageState extends State<MyHomePage> {
               },
             ),
         suggestionBuilder: (context, state, data) {
-          var existingIndex = selectedItems.indexWhere((element) => element["uuid"] == data["uuid"]);
+          var existingIndex = selectedItems
+              .indexWhere((element) => element["uuid"] == data["uuid"]);
           var selectedData = data;
           return Material(
             child: ListTile(
@@ -207,7 +216,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 }),
           );
         },
-        suggestionsBoxElevation: 10,
+        // suggestionsBoxElevation: 10,
+        suggestionsBoxRadius: 12,
         findSuggestions: (String query) async {
           setState(() {
             isLoading = true;
@@ -228,6 +238,7 @@ class _MyHomePageState extends State<MyHomePage> {
         focusedBorderColor: lineColor,
         borderRadius: 5,
         borderSize: 2,
+        suggestionsBoxRadius: 12,
         resetTextOnSubmitted: true,
         minTextFieldWidth: 300,
         validator: (value) {
@@ -248,7 +259,8 @@ class _MyHomePageState extends State<MyHomePage> {
               },
             ),
         suggestionBuilder: (context, state, data) {
-          var existingIndex = selectedItemsAsync.indexWhere((element) => element["uuid"] == data["uuid"]);
+          var existingIndex = selectedItemsAsync
+              .indexWhere((element) => element["uuid"] == data["uuid"]);
           var selectedData = data;
           return Material(
               child: ListTile(
@@ -258,7 +270,8 @@ class _MyHomePageState extends State<MyHomePage> {
                   selectedTileColor: Colors.green,
                   title: Text(selectedData["name"].toString()),
                   onTap: () {
-                    var existingIndex = selectedItemsAsync.indexWhere((element) => element["uuid"] == data["uuid"]);
+                    var existingIndex = selectedItemsAsync.indexWhere(
+                        (element) => element["uuid"] == data["uuid"]);
                     if (existingIndex >= 0) {
                       selectedItemsAsync.removeAt(existingIndex);
                     } else {
@@ -269,7 +282,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     setState(() {});
                   }));
         },
-        suggestionsBoxElevation: 10,
+        suggestionsBoxElevation: 0,
         findSuggestions: (String query) async {
           setState(() {
             isLoading = true;
