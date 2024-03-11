@@ -14,6 +14,7 @@ class FlutterMultiselectLayoutDelegate extends MultiChildLayoutDelegate {
   static const tagId = 'tag_';
   static const textFieldId = 'text_field';
   static const textId = 'text_id';
+  static const leadingPaddingId = 'leading_padding';
 
   final int length;
   final double minTextFieldWidth;
