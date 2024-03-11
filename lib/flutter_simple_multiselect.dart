@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:math';
 
 import 'package:debounce_throttle/debounce_throttle.dart';
+import 'package:flutter/foundation.dart';
 import './suggestions_box_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -174,6 +176,8 @@ class FlutterMultiselectState<T> extends State<FlutterMultiselect<T>> {
   List<T>? _suggestions;
   int _searchId = 0;
   Debouncer? _deBouncer;
+  final textFormKey = GlobalKey();
+  double inputHeight = 24;
 
   RenderBox? get renderBox => context.findRenderObject() as RenderBox?;
 
@@ -184,6 +188,14 @@ class FlutterMultiselectState<T> extends State<FlutterMultiselect<T>> {
 
     _focusNode = (widget.focusNode ?? FocusNode())
       ..addListener(_onFocusChanged);
+    Future.delayed(const Duration(milliseconds: 1000), () {
+      if (textFormKey.currentContext != null &&
+          textFormKey.currentContext!.size != null) {
+        setState(() {
+          inputHeight = textFormKey.currentContext!.size!.height;
+        });
+      }
+    });
 
     if (widget.activateSuggestionBox) _initializeSuggestionBox();
   }
@@ -404,6 +416,7 @@ class FlutterMultiselectState<T> extends State<FlutterMultiselect<T>> {
 
   @override
   Widget build(BuildContext context) {
+    bool isMobile = MediaQuery.of(context).size.width < 650;
     InputDecoration customDec = widget.inputDecoration ??
         InputDecoration(
           errorBorder: widget.multiselect
@@ -494,7 +507,13 @@ class FlutterMultiselectState<T> extends State<FlutterMultiselect<T>> {
                     widget.length,
                     (index) => LayoutId(
                       id: FlutterMultiselectLayoutDelegate.getTagId(index),
-                      child: widget.tagBuilder(context, index),
+                      child: Padding(
+                          padding: kIsWeb || Platform.isMacOS
+                              ? const EdgeInsets.only(top: 3)
+                              : (Platform.isAndroid || Platform.isIOS
+                                  ? EdgeInsets.zero
+                                  : const EdgeInsets.only(top: 3)),
+                          child: widget.tagBuilder(context, index)),
                     ),
                   ),
                 LayoutId(
@@ -502,6 +521,7 @@ class FlutterMultiselectState<T> extends State<FlutterMultiselect<T>> {
                     child: widget.multiselect
                         ? (widget.length == 0 || _isFocused
                             ? TextFormField(
+                                key: textFormKey,
                                 onTap: () {
                                   if (_isFocused) {
                                     _onSearchChanged("");
@@ -538,7 +558,8 @@ class FlutterMultiselectState<T> extends State<FlutterMultiselect<T>> {
                                 inputFormatters: widget.inputFormatters,
                               )
                             : SizedBox(
-                                height: widget.collapsedHeight ?? 24,
+                                height: widget.collapsedHeight ??
+                                    (isMobile ? 24 : inputHeight),
                                 child: SizedBox(
                                   height: 0.1,
                                   child: TextFormField(

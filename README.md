@@ -1,6 +1,6 @@
 # Flutter Simple Multiselect
 
-`v1.0.0`
+`v2.1.0`
 
 There are a few multiselect packages for flutter but  somehow i haven't found one that is simple like this. It's inspired by the vue multiselect. You can use static or async (server) data and use it as searchable single or multiselect. Everything is customizable.
 
@@ -9,8 +9,6 @@ Note: This package is created on the backbone of [Material Tag Editor](https://g
 ## Features
 
 Fetch and search async data directly from server or from static data. Use it for multiselect and single, and use it somehow naturally.
-
-Added validation in v1.0.0
 
 <p float="left">
   <img src="https://user-images.githubusercontent.com/30495155/212550777-b2b995da-6543-4f17-8acd-ec6506c0bfed.gif" width="220" />
@@ -64,13 +62,7 @@ FlutterMultiselect(
         var existingIndex = selectedItemsAsync.indexWhere((element) => element["uuid"] == data["uuid"]);
         var selectedData = data;
         return Material(
-            child: ListTile(
-                selected: existingIndex >= 0,
-                trailing: existingIndex >= 0 ? const Icon(Icons.check) : null,
-                selectedColor: Colors.white,
-                selectedTileColor: Colors.green,
-                title: Text(selectedData["name"].toString()),
-                onTap: () {
+            onPanDown: (_) {
                 var existingIndex = selectedItemsAsync.indexWhere((element) => element["uuid"] == data["uuid"]);
                 if (existingIndex >= 0) {
                     selectedItemsAsync.removeAt(existingIndex);
@@ -80,7 +72,15 @@ FlutterMultiselect(
 
                 state.selectAndClose(data);
                 setState(() {});
-                }));
+            }
+            child: GestureDetector(
+                child: ListTile(
+                selected: existingIndex >= 0,
+                trailing: existingIndex >= 0 ? const Icon(Icons.check) : null,
+                selectedColor: Colors.white,
+                selectedTileColor: Colors.green,
+                title: Text(selectedData["name"].toString()),
+                )));
     },
     suggestionsBoxElevation: 10,
     findSuggestions: (String query) async {
