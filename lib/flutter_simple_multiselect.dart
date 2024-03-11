@@ -28,7 +28,7 @@ class FlutterMultiselect<T> extends StatefulWidget {
     required this.tagBuilder,
     required this.suggestionBuilder,
     required this.findSuggestions,
-    Key? key,
+    super.key,
     this.focusNode,
     this.isLoading = false,
     this.enabled = true,
@@ -71,7 +71,7 @@ class FlutterMultiselect<T> extends StatefulWidget {
     this.collapsedHeight,
     this.unfocusedInputDecoration,
     this.leadingSelectionPadding,
-  }) : super(key: key);
+  });
 
   /// Multiple choices
   final bool multiselect;
@@ -416,7 +416,7 @@ class FlutterMultiselectState<T> extends State<FlutterMultiselect<T>> {
 
   @override
   Widget build(BuildContext context) {
-    bool isMobile = MediaQuery.of(context).size.width < 650;
+    bool isMobile = MediaQuery.of(context).size.width < (kIsWeb ? 509 : 520);
     InputDecoration customDec = widget.inputDecoration ??
         InputDecoration(
           errorBorder: widget.multiselect
