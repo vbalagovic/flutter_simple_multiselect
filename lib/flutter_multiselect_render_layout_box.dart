@@ -6,9 +6,9 @@ import 'flutter_multiselect_layout_delegate.dart';
 class FlutterMultiselectRenderLayoutBox
     extends RenderCustomMultiChildLayoutBox {
   FlutterMultiselectRenderLayoutBox({
-    List<RenderBox>? children,
-    required FlutterMultiselectLayoutDelegate delegate,
-  }) : super(children: children, delegate: delegate);
+    super.children,
+    required FlutterMultiselectLayoutDelegate super.delegate,
+  });
 
   @override
   void performLayout() {

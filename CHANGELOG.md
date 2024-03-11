@@ -17,3 +17,7 @@ Added validation
 ## 2.0.0
 
 Migrated to dart 3, updated styling for errors
+
+## 2.1.0
+
+Updated for newer versions of Flutter, Updated examples to fix the issue with on Tap of list tile.
